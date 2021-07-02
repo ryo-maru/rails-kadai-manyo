@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-   before_action :set_task, only: [:show, :edit, :update]
+   before_action :set_task, only: [:show, :edit, :update, :destroy]
 
   def index
     @tasks = Task.all
@@ -16,7 +16,7 @@ class TasksController < ApplicationController
     @task = Task.new(task_params)
     if @task.save
       # 一覧画面へ遷移して"ブログを作成しました！"とメッセージを表示します。
-      redirect_to tasks_path, notice: "ブログを作成しました！"
+      redirect_to tasks_path, notice: "タスクを作成しました！"
     else
       # 入力フォームを再描画します。
       render :new
@@ -26,13 +26,17 @@ class TasksController < ApplicationController
   def edit
   end
 
-
   def update
     if @task.update(task_params)
-      redirect_to tasks_path, notice: "ブログを編集しました！"
+      redirect_to tasks_path, notice: "タスクを編集しました！"
     else
       render :edit
     end
+  end
+
+  def destroy
+    @task.destroy
+     redirect_to tasks_path, notice:"タスクを削除しました！"
   end
 
   private
