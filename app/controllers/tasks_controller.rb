@@ -7,6 +7,9 @@ class TasksController < ApplicationController
     if params[:sort_expired]
       @tasks = Task.all
       @tasks = @tasks.order(deadline: :desc)
+    elsif params[:sort_priority]
+      @tasks = Task.all
+      @tasks = @tasks.order(priority: :desc)
     else
       @tasks = Task.all
       @tasks = @tasks.order(created_at: :desc)
@@ -28,42 +31,8 @@ class TasksController < ApplicationController
     end
 
 
-    #if params[:search].present?
-     #@tasks = Task.where('title LIKE ?', "%#{params[:search]}%") if params[:search].present?
-    #@tasks = Task.where("task_name LIKE ?", "%#{params[:search]}%"
-    #end
+end
 
-      #@tasks = Task.where(tasks.status, params[:status])
-    #end
-  #elsif params[:search].present? && params[:status] != ""
-  #  @tasks = Task.where("task_name LIKE ?", "%#{params[:search]}%")
-                  #.where(status: params[:status])
-   #end
-
-   #if params[:status].present?
-   #@tasks = Task.where(status: params[:status])
- #end
-  end
-    #if params[:title]
-    #@tasks = Task.where('title LIKE(?)', "%#{params[:keyword]}%")
-    #else
-    #end
-#Product.where('title LIKE(?)', "%#{params[:keyword]}%")
-
-  #if params[:task][:title].present? && params[:task][:status].present?
-      # @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%")
-       #@tasks = @tasks.where(status: params[:task][:status])
-
-     #elsif params[:task][:title].present?
-      # @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%")
-
-     #elsif params[:task][:status].present?
-      # @tasks = @tasks.where(status: params[:task][:status])
-    # #end
-   #end
-
-
-  # 追記する。render :new が省略されている。
   def new
     @task = Task.new
   end
