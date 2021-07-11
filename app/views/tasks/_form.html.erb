@@ -25,6 +25,10 @@
     <%= t('form.status') %>
     <%= form.select :status, options_for_select(Task.statuses.keys), {prompt: "選択してください"} %>
   </div>
+  <div class="task_priority">
+    <%= t('form.priority') %>
+    <%= form.select :priority, options_for_select(Task.priorities.keys), {prompt: "選択してください"}  %>
+  </div>
   <%= form.submit %>
 <% end %>
 <%= link_to "タスク一覧画面にもどる", tasks_path %>
