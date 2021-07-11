@@ -5,25 +5,25 @@ class TasksController < ApplicationController
   def index
     # @tasks = Task.all.order(created_at: :desc)
     if params[:sort_expired]
-      @tasks = Task.all
+      @tasks = Task.all.page(params[:page]).per(20)
       @tasks = @tasks.order(deadline: :desc).page(params[:page]).per(20)
     elsif params[:sort_priority]
-      @tasks = Task.all
+      @tasks = Task.all.page(params[:page]).per(20)
       @tasks = @tasks.order(priority: :desc).page(params[:page]).per(20)
     else
-      @tasks = Task.all
+      @tasks = Task.all.page(params[:page]).per(20)
       @tasks = @tasks.order(created_at: :desc).page(params[:page]).per(20)
-      @tasks = Task.all.order(id: "DESC")
+      @tasks = Task.all.order(id: "DESC").page(params[:page]).per(20)
     end
 
     if params[:task].present?
       #@tasks = current_user.tasks
       if params[:task][:title].present? && params[:task][:status].present?
-        @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%")
+        @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%").page(params[:page]).per(20)
         @tasks = @tasks.where(status: params[:task][:status]).page(params[:page]).per(20)
 
       elsif params[:task][:title].present?
-        @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%")
+        @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%").page(params[:page]).per(20)
 
       elsif params[:task][:status].present?
         @tasks = @tasks.where(status: params[:task][:status]).page(params[:page]).per(20)
