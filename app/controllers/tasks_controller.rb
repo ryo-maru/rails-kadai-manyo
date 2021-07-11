@@ -1,9 +1,68 @@
 class TasksController < ApplicationController
    before_action :set_task, only: [:show, :edit, :update, :destroy]
 
+
   def index
-    @tasks = Task.all.order(id: "DESC")
+    # @tasks = Task.all.order(created_at: :desc)
+    if params[:sort_expired]
+      @tasks = Task.all
+      @tasks = @tasks.order(deadline: :desc)
+    else
+      @tasks = Task.all
+      @tasks = @tasks.order(created_at: :desc)
+      @tasks = Task.all.order(id: "DESC")
+    end
+
+    if params[:task].present?
+      #@tasks = current_user.tasks
+      if params[:task][:title].present? && params[:task][:status].present?
+        @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%")
+        @tasks = @tasks.where(status: params[:task][:status])
+
+      elsif params[:task][:title].present?
+        @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%")
+
+      elsif params[:task][:status].present?
+        @tasks = @tasks.where(status: params[:task][:status])
+      end
+    end
+
+
+    #if params[:search].present?
+     #@tasks = Task.where('title LIKE ?', "%#{params[:search]}%") if params[:search].present?
+    #@tasks = Task.where("task_name LIKE ?", "%#{params[:search]}%"
+    #end
+
+      #@tasks = Task.where(tasks.status, params[:status])
+    #end
+  #elsif params[:search].present? && params[:status] != ""
+  #  @tasks = Task.where("task_name LIKE ?", "%#{params[:search]}%")
+                  #.where(status: params[:status])
+   #end
+
+   #if params[:status].present?
+   #@tasks = Task.where(status: params[:status])
+ #end
   end
+    #if params[:title]
+    #@tasks = Task.where('title LIKE(?)', "%#{params[:keyword]}%")
+    #else
+    #end
+#Product.where('title LIKE(?)', "%#{params[:keyword]}%")
+
+  #if params[:task][:title].present? && params[:task][:status].present?
+      # @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%")
+       #@tasks = @tasks.where(status: params[:task][:status])
+
+     #elsif params[:task][:title].present?
+      # @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%")
+
+     #elsif params[:task][:status].present?
+      # @tasks = @tasks.where(status: params[:task][:status])
+    # #end
+   #end
+
+
   # 追記する。render :new が省略されている。
   def new
     @task = Task.new
@@ -41,7 +100,7 @@ class TasksController < ApplicationController
 
   private
     def task_params
-      params.require(:task).permit(:title, :content)
+      params.require(:task).permit(:title, :content, :deadline, :status)
     end
 
     def set_task
