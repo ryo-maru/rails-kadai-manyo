@@ -48,86 +48,83 @@ RSpec.describe 'タスク管理機能', type: :system do
 
       end
     end
+  end
 
-    describe '詳細表示機能' do
-      context '任意のタスク詳細画面に遷移した場合' do
-        it '該当タスクの内容が表示される' do
+  describe '詳細表示機能' do
+    context '任意のタスク詳細画面に遷移した場合' do
+      it '該当タスクの内容が表示される' do
           @task = FactoryBot.create(:task,title: 'task1',content: 'content1', deadline: '2021/07/11', status: '未着手')
-
 
           visit task_path(@task)
 
           expect(page).to have_content 'task1'
           expect(page).to have_content 'content1'
 
-        end
       end
     end
+  end
 
-    describe 'タスクを作成日時の降順に変更する機能' do
-      context 'タスクが作成日時の降順に並んでいる場合' do
-        it '新しいタスクが一番上に表示される' do
+  describe 'タスクを作成日時の降順に変更する機能' do
+    context 'タスクが作成日時の降順に並んでいる場合' do
+      it '新しいタスクが一番上に表示される' do
           task1 =  FactoryBot.create(:task, title: 'task1')
           task2 =  FactoryBot.create(:task, title: 'task2')
           visit tasks_path
           task_list = all('.task_row')
           expect(page).to have_content 'task2'
           expect(page).to have_content 'task1'
-        end
       end
+    end
+  end
 
+  describe '検索機能' do
+    before do
+      visit new_task_path
+      fill_in 'Title', with: 'task1'
+      fill_in 'Content', with: 'content1'
+      fill_in 'Deadline', with: '2021/07/11'
+      select '未着手', from: 'task_status'
+      click_button 'Create Task'
+      visit new_task_path
+      fill_in 'Title', with: 'test2'
+      fill_in 'Content', with: 'content2'
+      fill_in 'Deadline', with: '2021/07/12'
+      select '未着手', from: 'task_status'
+      click_button 'Create Task'
+    end
+    context 'タイトルであいまい検索をした場合' do
+      it "検索キーワードを含むタスクで絞り込まれる" do
+        visit tasks_path
+        fill_in 'task_title', with: 'task'
+        click_on '検索'
+        expect(page).to have_content 'task'
+      end
+    end
 
+    context 'ステータス検索をした場合' do
+      it "ステータスに完全一致するタスクが絞り込まれる" do
+        visit tasks_path
+        select "未着手", from: "task_status"
+        click_on '検索'
+        expect(page).to have_content '未着手'
+      end
+    end
 
-      describe '検索機能' do
-        before do
-          visit new_task_path
-          fill_in 'Title', with: 'task1'
-          fill_in 'Content', with: 'content1'
-          fill_in 'Deadline', with: '2021/07/11'
-          select '未着手', from: 'task_status'
-          click_button 'Create Task'
-          visit new_task_path
-          fill_in 'Title', with: 'test2'
-          fill_in 'Content', with: 'content2'
-          fill_in 'Deadline', with: '2021/07/12'
-          select '未着手', from: 'task_status'
-          click_button 'Create Task'
-        end
-        context 'タイトルであいまい検索をした場合' do
-          it "検索キーワードを含むタスクで絞り込まれる" do
-            visit tasks_path
-            fill_in 'task_title', with: 'task'
-            click_on '検索'
-            expect(page).to have_content 'task'
-          end
-        end
-
-        context 'ステータス検索をした場合' do
-          it "ステータスに完全一致するタスクが絞り込まれる" do
-            visit tasks_path
-            select "未着手", from: "task_status"
-            click_on '検索'
-            expect(page).to have_content '未着手'
-          end
-        end
-
-
-
-        context 'タイトルのあいまい検索とステータス検索をした場合' do
-          it "検索キーワードをタイトルに含み、かつステータスに完全一致するタスク絞り込まれる" do
-            visit new_task_path
-         task = FactoryBot.create(:task, title: 'task', status: '未着手')
-            visit tasks_path
-            fill_in 'task_title', with: 'task'
-            select "未着手", from: "task_status"
-            click_on '検索'
-            expect(page).to have_content 'task'
-            expect(page).to have_content '未着手'
-          end
-        end
-
-
-        describe '優先順位での並び変え' do
+    context 'タイトルのあいまい検索とステータス検索をした場合' do
+      it "検索キーワードをタイトルに含み、かつステータスに完全一致するタスク絞り込まれる" do
+        visit new_task_path
+        task = FactoryBot.create(:task, title: 'task', status: '未着手')
+        visit tasks_path
+        fill_in 'task_title', with: 'task'
+        select "未着手", from: "task_status"
+        click_on '検索'
+        expect(page).to have_content 'task'
+        expect(page).to have_content '未着手'
+      end
+    end
+  end
+  
+  describe '優先順位での並び変え' do
     context '優先順位でソートするボタンを押した場合' do
       it '優先順位の昇順で表示される' do
         visit tasks_path
@@ -135,9 +132,6 @@ RSpec.describe 'タスク管理機能', type: :system do
         sleep 0.5
         test_list = all('.sort_priority')
         expect(test_list[0]).to have_content '高'
-      end
-    end
-  end
       end
     end
   end
