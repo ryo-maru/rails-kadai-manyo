@@ -8,4 +8,5 @@ class Task < ApplicationRecord
   scope :search_by_status, -> status { where(status: status) }
   validates :priority, presence: true
   enum priority: { '低': 0, '中': 1, '高': 2 }
+  max_paginates_per 5
 end
