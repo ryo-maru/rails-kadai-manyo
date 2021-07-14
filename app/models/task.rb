@@ -9,4 +9,5 @@ class Task < ApplicationRecord
   validates :priority, presence: true
   enum priority: { '低': 0, '中': 1, '高': 2 }
   max_paginates_per 5
+  belongs_to :user
 end
