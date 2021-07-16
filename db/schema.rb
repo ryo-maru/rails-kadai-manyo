@@ -10,19 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_14_142930) do
+ActiveRecord::Schema.define(version: 2021_07_15_144702) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "options", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "content", null: false
-  end
-
   create_table "tasks", force: :cascade do |t|
-    t.string "title"
-    t.string "content"
+    t.string "title", default: "", null: false
+    t.string "content", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deadline"
@@ -39,6 +34,7 @@ ActiveRecord::Schema.define(version: 2021_07_14_142930) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "admin", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
