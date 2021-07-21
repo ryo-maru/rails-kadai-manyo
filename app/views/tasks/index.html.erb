@@ -25,11 +25,9 @@
     <td><%= task.status %></td>
     <td class="sort_priority"><%= task.priority %></td>
     <td><%= task.user.name %></td>
-    <%# if task.user.name == current_user.name %>
     <td><%= link_to '詳細', task_path(task.id), class: 'btn btn-primary' %></td>
     <td><%= link_to "編集", edit_task_path(task.id), class: 'btn btn-success', data: { confirm: '本当に編集していいですか？' } %></td>
     <td><%= link_to '削除', task_path(task.id), class: 'btn btn-warning', method: :delete, data: { confirm: '本当に削除していいですか？' } %></td>
-    <%# end %>
   </tr>
 <% end %>
 </table>

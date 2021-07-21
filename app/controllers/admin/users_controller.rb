@@ -1,7 +1,5 @@
 class Admin::UsersController < ApplicationController
   before_action :set_user, only: [:edit, :update, :destroy, :show]
-  #before_action :not_logged_in
-  #before_action :not_admin_use
   before_action :require_admin
 
 
@@ -20,7 +18,7 @@ class Admin::UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      redirect_to user_path(@user.id)
+      redirect_to admin_users_path, notice: "#{@user.name}を登録しました。"
     else
       render :new
     end
@@ -33,7 +31,7 @@ class Admin::UsersController < ApplicationController
     if @user.update(user_params)
       redirect_to admin_user_path(@user.id), notice: 'ユーザー情報を変更しました'
     else
-      render :edit
+      render :edit, notice: "更新に失敗しました"
     end
   end
 

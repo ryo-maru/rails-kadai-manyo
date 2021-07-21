@@ -7,8 +7,14 @@ class User < ApplicationRecord
   validates :password, presence: true, length: { minimum: 6 }
   has_many :tasks, dependent: :destroy
   max_paginates_per 5
+  before_destroy :ensure_admin_deatroy
+  before_update :ensure_admin_update
 
   private
+
+  def ensure_admin_deatroy
+     throw(:abort) if User.where(admin: true).count <= 1 && self.admin == true
+   end
 
   def ensure_admin_update
       if User.where(admin: true).count == 1 && self.admin == false

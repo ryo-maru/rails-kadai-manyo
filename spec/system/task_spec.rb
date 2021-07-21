@@ -1,35 +1,28 @@
 require 'rails_helper'
 RSpec.describe 'タスク管理機能', type: :system do
+
   before do
-    # あらかじめタスク一覧のテストで使用するためのタスクを二つ作成する
-    @task = FactoryBot.create(:task,title: 'task_title')
-    @task = FactoryBot.create(:second_task)
+    visit new_user_path
+    fill_in 'user_name', with: 'suzuki_test121'
+    fill_in 'user_email', with: 'suzuki_test121@example.com'
+    fill_in 'user_password', with: 'suzuki'
+    fill_in 'user_password_confirmation', with: 'suzuki'
+    click_on 'Create my account'
+    visit tasks_path
   end
 
   describe '新規作成機能' do
     context 'タスクを新規作成した場合' do
       it '作成したタスクが表示される' do
-        # 1. new_task_pathに遷移する（新規作成ページに遷移する）
         visit new_task_path
-        # ここにnew_task_pathにvisitする処理を書く
-        # 2. 新規登録内容を入力する
         fill_in 'Title', with: 'task_title'
         fill_in 'Content', with: 'task_content'
-        fill_in 'Deadline', with: '2021/07/11'
+        fill_in 'Deadline', with: '2021/07/30'
         select '未着手', from: 'task_status'
-        #「タスク名」というラベル名の入力欄と、「タスク詳細」というラベル名の入力欄にタスクのタイトルと内容をそれぞれ入力する
-        # ここに「タスク名」というラベル名の入力欄に内容をfill_in（入力）する処理を書く
-        # ここに「タスク詳細」というラベル名の入力欄に内容をfill_in（入力）する処理を書く
-        # 3. 「登録する」というvalue（表記文字）のあるボタンをクリックする
+        select '中', from: 'task_priority'
         click_button 'Create Task'
-        # ここに「登録する」というvalue（表記文字）のあるボタンをclick_onする（クリックする）する処理を書く
-        # 4. clickで登録されたはずの情報が、タスク詳細ページに表示されているかを確認する
         visit tasks_path
-        # （タスクが登録されたらタスク詳細画面に遷移されるという前提）
-
-
         expect(page).to have_content '未着手'
-        # ここにタスク詳細ページに、テストコードで作成したデータがタスク詳細画面にhave_contentされているか（含まれているか）を確認（期待）するコードを書く
       end
     end
   end
@@ -37,15 +30,8 @@ RSpec.describe 'タスク管理機能', type: :system do
   describe '一覧表示機能' do
     context '一覧画面に遷移した場合' do
       it '作成済みのタスク一覧が表示される' do
-        # テストで使用するためのタスクを作成
-        task = FactoryBot.create(:task, title: 'task', deadline: '2021/07/11', status: '未着手')
-        # タスク一覧ページに遷移
         visit tasks_path
-        # visitした（遷移した）page（タスク一覧ページ）に「task」という文字列が
-        # have_contentされているか（含まれているか）ということをexpectする（確認・期待する）
         expect(page).to have_content '未着手'
-        # expectの結果が true ならテスト成功、false なら失敗として結果が出力される
-
       end
     end
   end
@@ -53,10 +39,9 @@ RSpec.describe 'タスク管理機能', type: :system do
   describe '詳細表示機能' do
     context '任意のタスク詳細画面に遷移した場合' do
       it '該当タスクの内容が表示される' do
-          @task = FactoryBot.create(:task,title: 'task1',content: 'content1', deadline: '2021/07/11', status: '未着手')
-
+          second_user = FactoryBot.create(:second_user)
+          @task = FactoryBot.create(:second_task,title: 'task1',content: 'content1', deadline: '2021/07/30', status: '未着手', priority: '中',user_id: second_user.id )
           visit task_path(@task)
-
           expect(page).to have_content 'task1'
           expect(page).to have_content 'content1'
 
@@ -67,12 +52,24 @@ RSpec.describe 'タスク管理機能', type: :system do
   describe 'タスクを作成日時の降順に変更する機能' do
     context 'タスクが作成日時の降順に並んでいる場合' do
       it '新しいタスクが一番上に表示される' do
-          task1 =  FactoryBot.create(:task, title: 'task1')
-          task2 =  FactoryBot.create(:task, title: 'task2')
-          visit tasks_path
-          task_list = all('.task_row')
-          expect(page).to have_content 'task2'
-          expect(page).to have_content 'task1'
+        visit new_task_path
+        fill_in 'Title', with: 'task1'
+        fill_in 'Content', with: 'content1'
+        fill_in 'Deadline', with: '002021/07/30'
+        select '未着手', from: 'task_status'
+        select '中', from: 'task_priority'
+        click_button 'Create Task'
+        visit new_task_path
+        fill_in 'Title', with: 'task2'
+        fill_in 'Content', with: 'content2'
+        fill_in 'Deadline', with: '002021/07/30'
+        select '未着手', from: 'task_status'
+        select '高', from: 'task_priority'
+        click_button 'Create Task'
+        visit tasks_path
+
+        expect(page).to have_content 'task2'
+        expect(page).to have_content 'task1'
       end
     end
   end
@@ -82,14 +79,16 @@ RSpec.describe 'タスク管理機能', type: :system do
       visit new_task_path
       fill_in 'Title', with: 'task1'
       fill_in 'Content', with: 'content1'
-      fill_in 'Deadline', with: '2021/07/11'
+      fill_in 'Deadline', with: '002021/07/30'
       select '未着手', from: 'task_status'
+      select '中', from: 'task_priority'
       click_button 'Create Task'
       visit new_task_path
       fill_in 'Title', with: 'test2'
       fill_in 'Content', with: 'content2'
-      fill_in 'Deadline', with: '2021/07/12'
+      fill_in 'Deadline', with: '002021/07/30'
       select '未着手', from: 'task_status'
+      select '高', from: 'task_priority'
       click_button 'Create Task'
     end
     context 'タイトルであいまい検索をした場合' do
@@ -113,25 +112,47 @@ RSpec.describe 'タスク管理機能', type: :system do
     context 'タイトルのあいまい検索とステータス検索をした場合' do
       it "検索キーワードをタイトルに含み、かつステータスに完全一致するタスク絞り込まれる" do
         visit new_task_path
-        task = FactoryBot.create(:task, title: 'task', status: '未着手')
+        second_user = FactoryBot.create(:second_user)
+        @task = FactoryBot.create(:second_task,title: 'task1',content: 'content1', deadline: '2021/07/30', status: '未着手', priority: '中',user_id: second_user.id )
+
         visit tasks_path
-        fill_in 'task_title', with: 'task'
+        fill_in 'task_title', with: 'task1'
         select "未着手", from: "task_status"
         click_on '検索'
-        expect(page).to have_content 'task'
+        expect(page).to have_content 'task1'
         expect(page).to have_content '未着手'
       end
     end
   end
-  
+
   describe '優先順位での並び変え' do
     context '優先順位でソートするボタンを押した場合' do
       it '優先順位の昇順で表示される' do
+        #user = FactoryBot.create(:user)
+        #second_user = FactoryBot.create(:second_user)
+        #@task = FactoryBot.create(:second_task,title: 'task1',content: 'content1', deadline: '2021/07/30', status: '未着手', priority: '中', user_id: user.id )
+        #@second_task = FactoryBot.create(:second_task,title: 'task2',content: 'content2', deadline: '2021/07/30', status: '未着手', priority: '高', user_id: second_user.id)
+        visit new_task_path
+        fill_in 'Title', with: 'task1'
+        fill_in 'Content', with: 'content1'
+        fill_in 'Deadline', with: '002021/07/30'
+        select '未着手', from: 'task_status'
+        select '中', from: 'task_priority'
+        click_button 'Create Task'
+        visit new_task_path
+        fill_in 'Title', with: 'task2'
+        fill_in 'Content', with: 'content2'
+        fill_in 'Deadline', with: '002021/07/30'
+        select '未着手', from: 'task_status'
+        select '高', from: 'task_priority'
+        click_button 'Create Task'
+
         visit tasks_path
         click_on '優先順位でソートする'
-        sleep 0.5
-        test_list = all('.sort_priority')
-        expect(test_list[0]).to have_content '高'
+        sleep 1
+        task_list = all('.sort_priority')
+        expect(task_list[0]).to have_content '高'
+        expect(task_list[1]).to have_content '中'
       end
     end
   end
