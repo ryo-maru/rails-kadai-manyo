@@ -1,24 +1,24 @@
 class TasksController < ApplicationController
    before_action :set_task, only: [:show, :edit, :update, :destroy]
-
+   before_action :login_require
 
   def index
-    # @tasks = Task.all.order(created_at: :desc)
+
+    @tasks = current_user.tasks
+    #@tasks = @tasks.includes(:current_user)
+
+
+
     if params[:sort_expired]
-      @tasks = Task.all.page(params[:page]).per(20)
       @tasks = @tasks.order(deadline: :desc).page(params[:page]).per(20)
     elsif params[:sort_priority]
-      @tasks = Task.all.page(params[:page]).per(20)
       @tasks = @tasks.order(priority: :desc).page(params[:page]).per(20)
     else
-      @tasks = Task.all.page(params[:page]).per(20)
       @tasks = @tasks.order(created_at: :desc).page(params[:page]).per(20)
-      @tasks = Task.all.order(id: "DESC").page(params[:page]).per(20)
     end
 
     if params[:task].present?
-      #@tasks = current_user.tasks
-      if params[:task][:title].present? && params[:task][:status].present?
+      if params[:title].present? && params[:task][:status].present?
         @tasks = @tasks.where('title LIKE ?', "%#{params[:task][:title]}%").page(params[:page]).per(20)
         @tasks = @tasks.where(status: params[:task][:status]).page(params[:page]).per(20)
 
@@ -28,7 +28,9 @@ class TasksController < ApplicationController
       elsif params[:task][:status].present?
         @tasks = @tasks.where(status: params[:task][:status]).page(params[:page]).per(20)
       end
+
     end
+
 
 
 end
@@ -41,12 +43,10 @@ end
   end
 
   def create
-    @task = Task.new(task_params)
+    @task = current_user.tasks.build(task_params)
     if @task.save
-      # 一覧画面へ遷移して"ブログを作成しました！"とメッセージを表示します。
       redirect_to tasks_path, notice: "タスクを作成しました！"
     else
-      # 入力フォームを再描画します。
       render :new
     end
   end
@@ -74,6 +74,10 @@ end
 
     def set_task
       @task = Task.find(params[:id])
+    end
+
+    def login_require
+    redirect_to new_session_path unless current_user
     end
 
 end

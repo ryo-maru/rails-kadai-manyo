@@ -7,6 +7,7 @@ class Task < ApplicationRecord
   scope :search_by_task_title, -> (search){where('title like ?', "%#{search}%" )}
   scope :search_by_status, -> status { where(status: status) }
   validates :priority, presence: true
-  enum priority: { '低': 0, '中': 1, '高': 2 }
+  enum priority: { 低: 0, 中: 1, 高: 2 }
   max_paginates_per 5
+  belongs_to :user
 end

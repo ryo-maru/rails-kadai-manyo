@@ -1,11 +1,13 @@
-<h1>タスク一覧</h1>
-<p><%= notice %></p>
-タスク検索<%= form_with(model: Task.new, method: :get, local: true, url: tasks_path) do |form| %>
-<%= form.text_field :title %>
-ステータス検索
-<%= form.select :status, [["未着手", "0"], ["着手中", "1"], ["完了", "2"]], include_blank: "選択して下さい" %>
-<%= form.submit '検索', title: nil %>
-<% end %>
+<h1><%= @user.name %>のページ</h1>
+<h1>こんにちは<%= @user.name %>さん</h1>
+<p>メールアドレス: <%= @user.email %></p>
+
+<% if @user == current_user %>
+  <%= link_to 'タスクを作成する', new_task_path %>
+
+  <% end %>
+</div>
+
 
 <table class="table table-hover">
   <tr>
@@ -17,7 +19,7 @@
     <th>作成者</th>
   </tr>
 
-<% @tasks.each do |task| %>
+<% @user.tasks.each do |task| %>
   <tr>
     <td><%= task.title %></td>
     <td><%= task.content %></td>
@@ -36,4 +38,3 @@
 <%= link_to "終了期限でソートする", tasks_path(sort_expired: "true") %>
 <%= link_to "優先順位でソートする", tasks_path(sort_priority: "true") %>
 <br>
-<%= paginate @tasks %>
