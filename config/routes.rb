@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   root to: 'tasks#index'
   namespace :admin do
       resources :users, only: [:index, :show, :new, :create, :destroy, :edit, :update] do
+      resources :tags
       end
   end
 end

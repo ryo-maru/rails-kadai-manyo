@@ -10,4 +10,6 @@ class Task < ApplicationRecord
   enum priority: { 低: 0, 中: 1, 高: 2 }
   max_paginates_per 5
   belongs_to :user
+  has_many :taggings, dependent: :destroy
+  has_many :tags, through: :taggings
 end

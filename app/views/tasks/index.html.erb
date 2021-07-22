@@ -5,8 +5,10 @@
 ステータス検索
 <%= form.select :status, [["未着手", "0"], ["着手中", "1"], ["完了", "2"]], include_blank: "選択して下さい" %>
 <%= form.submit '検索', title: nil %>
+<br>
+<%= form.select("tag_id", Tag.pluck(:name, :id), { include_blank: true })  %>
+<%= form.submit 'ラベル検索', name: nil %>
 <% end %>
-
 <table class="table table-hover">
   <tr>
     <th>タイトル</th>
@@ -15,6 +17,7 @@
     <th>ステイタス</th>
     <th>優先順位</th>
     <th>作成者</th>
+    <th>タグ</th>
   </tr>
 
 <% @tasks.each do |task| %>
@@ -25,11 +28,20 @@
     <td><%= task.status %></td>
     <td class="sort_priority"><%= task.priority %></td>
     <td><%= task.user.name %></td>
+
     <td><%= link_to '詳細', task_path(task.id), class: 'btn btn-primary' %></td>
     <td><%= link_to "編集", edit_task_path(task.id), class: 'btn btn-success', data: { confirm: '本当に編集していいですか？' } %></td>
     <td><%= link_to '削除', task_path(task.id), class: 'btn btn-warning', method: :delete, data: { confirm: '本当に削除していいですか？' } %></td>
+
+    <td>
+      <% task.tags.each do |tag| %>
+      <%= tag.name %>
+      <% end %>
+    </td>
   </tr>
+
 <% end %>
+
 </table>
 
 <%= link_to '新しくタスクを投稿する', new_task_path %>
