@@ -1,6 +1,19 @@
 require 'rails_helper'
 RSpec.describe 'タスク管理機能', type: :system do
 
+  let!(:a_user){FactoryBot.create(:admin_user)}
+
+  let!(:tag1){FactoryBot.create(:tag_1)}
+  let!(:tag2){FactoryBot.create(:tag_2)}
+  let!(:tag3){FactoryBot.create(:tag_3)}
+
+
+
+
+  #before do
+   #task_a.tags << [tag1,tag2]
+# #end
+
   before do
     visit new_user_path
     fill_in 'user_name', with: 'suzuki_test121'
@@ -20,10 +33,20 @@ RSpec.describe 'タスク管理機能', type: :system do
         fill_in 'Deadline', with: '2021/07/30'
         select '未着手', from: 'task_status'
         select '中', from: 'task_priority'
+        check '学習'
+        check '買物'
         click_button 'Create Task'
         visit tasks_path
+
+        expect(page).to have_content 'task_title'
+        expect(page).to have_content 'task_content'
         expect(page).to have_content '未着手'
       end
+      it '複数のラベルが登録できる' do
+        expect(page).to have_content '学習'
+        expect(page).to have_content '買物'
+      end
+
     end
   end
 
@@ -80,19 +103,24 @@ RSpec.describe 'タスク管理機能', type: :system do
 
   describe '検索機能' do
     before do
+
+
       visit new_task_path
       fill_in 'Title', with: 'task1'
       fill_in 'Content', with: 'content1'
       fill_in 'Deadline', with: '002021/07/30'
       select '未着手', from: 'task_status'
       select '中', from: 'task_priority'
+      check '学習'
       click_button 'Create Task'
+
       visit new_task_path
       fill_in 'Title', with: 'test2'
       fill_in 'Content', with: 'content2'
       fill_in 'Deadline', with: '002021/07/30'
       select '未着手', from: 'task_status'
       select '高', from: 'task_priority'
+      check '買物'
       click_button 'Create Task'
     end
     context 'タイトルであいまい検索をした場合' do
@@ -127,6 +155,16 @@ RSpec.describe 'タスク管理機能', type: :system do
         expect(page).to have_content '未着手'
       end
     end
+
+    context 'ラベルで絞りこんだ場合' do
+      it '指定したラベルを含むタスクのみが表示される' do
+        visit tasks_path
+        select '学習', from: 'ラベル'
+        click_button '検索'
+        expect(page).to have_content 'task1'
+
+      end
+    end
   end
 
   describe '優先順位での並び変え' do
@@ -157,6 +195,26 @@ RSpec.describe 'タスク管理機能', type: :system do
         task_list = all('.sort_priority')
         expect(task_list[0]).to have_content '高'
         expect(task_list[1]).to have_content '中'
+      end
+    end
+  end
+
+  describe 'ラベル作成機能' do
+    context '管理者権限でラベルを作成した場合' do
+      before do
+        click_link "Logout"
+        visit new_session_path
+        fill_in 'session_email', with:'admin@test.com'
+        fill_in 'session_password', with:'password'
+        click_button 'Log in'
+        visit admin_users_path
+        click_link '新規タグ登録'
+      end
+
+      it '作成したラベルが追加される' do
+        fill_in 'ラベル名', with:'サンプル'
+        click_button '作成'
+        expect(page).to have_content 'サンプル'
       end
     end
   end
