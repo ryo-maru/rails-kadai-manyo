@@ -27,6 +27,9 @@ class TasksController < ApplicationController
 
       elsif params[:task][:status].present?
         @tasks = @tasks.where(status: params[:task][:status]).page(params[:page]).per(20)
+
+      else params[:task][:tag].present?
+        @tasks = @tasks.where(params[:task][:tag]).page(params[:page]).per(20)
       end
 
     end

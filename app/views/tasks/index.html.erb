@@ -6,9 +6,17 @@
 <%= form.select :status, [["未着手", "0"], ["着手中", "1"], ["完了", "2"]], include_blank: "選択して下さい" %>
 <%= form.submit '検索', title: nil %>
 <br>
-<%= form.select("tag_id", Tag.pluck(:name, :id), { include_blank: true })  %>
-<%= form.submit 'ラベル検索', name: nil %>
+<div class="col-auto">
+        <%= form.label :tag, "ラベル", class:"form-label" %>
+      </div>
+      <div class="col-auto">
+        <%= form.select :tag, Tag.all.collect{ |tag| [tag.name, tag.id]}, { include_blank: true } , { class:"form-control form-control-sm status-select" } %>
+      <div class="col-auto">
+        <%= form.submit '検索' , class:"btn btn-sm btn-outline-secondary" %>
+      </div>
+      </div>
 <% end %>
+
 <table class="table table-hover">
   <tr>
     <th>タイトル</th>
@@ -17,7 +25,7 @@
     <th>ステイタス</th>
     <th>優先順位</th>
     <th>作成者</th>
-    <th>タグ</th>
+
   </tr>
 
 <% @tasks.each do |task| %>
@@ -28,6 +36,8 @@
     <td><%= task.status %></td>
     <td class="sort_priority"><%= task.priority %></td>
     <td><%= task.user.name %></td>
+    
+
 
     <td><%= link_to '詳細', task_path(task.id), class: 'btn btn-primary' %></td>
     <td><%= link_to "編集", edit_task_path(task.id), class: 'btn btn-success', data: { confirm: '本当に編集していいですか？' } %></td>

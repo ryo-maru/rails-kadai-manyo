@@ -1,7 +1,7 @@
 <h2>ラベル作成</h2>
 <div class="main-area">
   <div class="card p-3">
-    <%= form_with(model: @tag, url: admin_users_path,local:true,class:"row g-3") do |f| %>
+    <%= form_with(model: @tag, url: admin_tags_path,local:true,class:"row g-3") do |f| %>
     <div class="col-auto">
       <%= f.label :name,'ラベル名' ,class:"form-label"%>
     </div>
@@ -27,3 +27,6 @@
     </div>
   </div>
 </div>
+
+<%= link_to '管理者画面に戻る', admin_users_path %>
+<%= link_to '新しくタスクを投稿する', new_task_path %>
