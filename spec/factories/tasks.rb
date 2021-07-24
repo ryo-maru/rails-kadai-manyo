@@ -7,6 +7,7 @@ FactoryBot.define do
     deadline { DateTime.now }
     status {'未着手'}
     priority { '中' }
+    
     #user.name {'太郎'}
     association :user
   end

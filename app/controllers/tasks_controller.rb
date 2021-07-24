@@ -27,6 +27,11 @@ class TasksController < ApplicationController
 
       elsif params[:task][:status].present?
         @tasks = @tasks.where(status: params[:task][:status]).page(params[:page]).per(20)
+
+      elsif params[:task][:tag].present?
+      @tasks = current_user.tasks.search_tag(params[:task][:tag]).page(params[:page]).per(20)
+      else
+        @tasks = current_user.tasks.select(:id, :title, :content, :created_at,:status,:priority,:deadline).order(created_at: :DESC).page(params[:page]).per(20)
       end
 
     end
@@ -69,7 +74,7 @@ end
 
   private
     def task_params
-      params.require(:task).permit(:title, :content, :deadline, :status, :priority)
+      params.require(:task).permit(:title, :content, :deadline, :status, :priority,{ tag_ids: [] } )
     end
 
     def set_task

@@ -1,0 +1,32 @@
+<h2>ラベル作成</h2>
+<div class="main-area">
+  <div class="card p-3">
+    <%= form_with(model: @tag, url: admin_tags_path,local:true,class:"row g-3") do |f| %>
+    <div class="col-auto">
+      <%= f.label :name,'ラベル名' ,class:"form-label"%>
+    </div>
+    <div class="col-auto">
+      <%= f.text_field :name , class:"form-control form-control-sm"%>
+    </div>
+    <div class="col-auto">
+      <%= f.submit '作成' , class:"btn btn-outline-secondary btn-sm"%>
+    </div>
+    <% end %>
+
+
+    <div class="card m-3 p-2">
+      <h5>タグ一覧</h5>
+
+      <div class="p-1">
+        <% @tags.each do |tag| %>
+        <span class="m-1 label-bg d-inline">
+          #<%= tag.name %>
+          <%= link_to '✖️', admin_tag_path(tag.id), method: :delete, data: { confirm: '削除してよろしいですか？'} %>
+        </span>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%= link_to '管理者画面に戻る', admin_users_path %>
+<%= link_to '新しくタスクを投稿する', new_task_path %>

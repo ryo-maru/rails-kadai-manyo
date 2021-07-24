@@ -2,4 +2,15 @@
 <p>タイトル: <%= @task.title %></p>
 <p>内容: <%= @task.content %></p>
 <p>終了期限: <%= @task.deadline.strftime('%m/%d') %></p>
+<p>ステイタス: <%= @task.status %></p>
+<p>優先順位: <%= @task.priority %></p>
+<p>作成者: <%= @task.user.name %></p>
+
+<td>
+  <% @task.tags.each do |tag| %>
+  <p>関連タグ#<%= tag.name %></p>
+  <% end %>
+</td>
+<br>
+<br>
 <%= link_to "タスク一覧画面にもどる", tasks_path %>

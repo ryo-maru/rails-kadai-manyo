@@ -29,6 +29,10 @@
     <%= t('form.priority') %>
     <%= form.select :priority, options_for_select(Task.priorities.keys), {prompt: "選択してください"}  %>
   </div>
+
+  <div class="task_tag">
+    <%= form.collection_check_boxes(:tag_ids, Tag.all, :id, :name) %>
+  </div>
   <%= form.submit %>
 <% end %>
 <%= link_to "タスク一覧画面にもどる", tasks_path %>
